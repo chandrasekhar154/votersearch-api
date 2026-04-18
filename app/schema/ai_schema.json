@@ -1,0 +1,32 @@
+{
+  "table": "election_voterslist",
+  "columns": [
+    "PolingStationNo",
+    "sno",
+    "VoterName",
+    "VoterFatherName",
+    "VoterAddress",
+    "VoterQualification",
+    "VoterBusiness",
+    "Category",
+    "VoterAge",
+    "VoterGender",
+    "VoterIdNo",
+    "edited",
+    "WardNo",
+    "VoterMandal",
+    "VoterRevenue",
+    "VoterDistrict",
+    "VoterPhone",
+    "VoterEmail",
+    "BusinessDescription",
+    "PolingStationAdd",
+    "VoterCaste",
+    "BusinessOrg",
+    "PoliticalGroup",
+    "Remarks",
+    "Favourable",
+    "submitted_by",
+    "submitted_time"
+  ]
+}
