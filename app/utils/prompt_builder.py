@@ -1,3 +1,7 @@
+from langchain_core.prompts import PromptTemplate
+
+
+
 def buildPrompt(userPrompt: str, schema: dict) -> str:
     return f"""
 You are an SQL generator. Given the following schema:

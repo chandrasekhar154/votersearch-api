@@ -3,3 +3,6 @@ uvicorn
 openai
 python-dotenv
 mysql-connector-python
+langchain=1.3.1
+langchain-openai=1.2.2
+langchain-community=0.4.2
