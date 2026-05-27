@@ -1,5 +1,6 @@
 import os
 import mysql.connector
+from langchain_core.tools import tool
 
 def getConnection():
     return mysql.connector.connect(
@@ -10,17 +11,27 @@ def getConnection():
         port=3306
     )
 
+@tool
 def executeQuery(query: str):
-    conn = getConnection()
-    cursor = conn.cursor(dictionary=True)
+    """
+    Executes a MySQL Select Query and returns the results as a string. Use this method to run sql queries againest the voter database. 
+    """
+    
+    try:
+        conn = getConnection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        if not results:
+            return "Query executed successfully but returned no results."
 
-    cursor.execute(query)
-    results = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return results
+        return str(results)
+    except Exception as e:
+        # Return the error as a string
+        return f"SQL Error: {str(e)}"
 
 def fetchSchema() -> dict:
     """
