@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from app.services.ai_service import generateSQL
-from app.db.database import executeQuery
+from app.services.sql_safety import validateSQL
+from app.db.database import executeQuery, fetchSchema
 from app.utils.prompt_builder import buildPrompt, cleanSQL
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
@@ -15,6 +17,44 @@ router = APIRouter()
 # Load schema
 with open("app/schema/ai_schema.json") as f:
     schema = json.load(f)
+    
+# Fetch schema once when the server starts — cached in this module
+# If you add a new table/column to your DB, just restart the server
+_dynamicSchema = fetchSchema()
+
+class QueryRequest(BaseModel):
+    prompt: str
+
+@router.post("/voterResponse")
+async def voterResponse(body: QueryRequest):
+    if not body.prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required")
+
+    try:
+        # Step 1: Build prompt with live schema
+        aiPrompt = buildPrompt(body.prompt, _dynamicSchema)
+        
+        # Step 2: Generate SQL via LangChain
+        rawSQL = generateSQL(aiPrompt)
+        cleanedSQL = cleanSQL(rawSQL)
+        
+        print("cleanedSQL==>", cleanedSQL)
+        
+        # Step 3: Validate SQL safety
+        safeSQL = validateSQL(cleanedSQL)
+        print("safeSQL-->", safeSQL)
+        
+        # Step 4: Execute
+        result = executeQuery(safeSQL)
+        
+        return {
+            "sql": safeSQL,
+            "data": result
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/query")
 async def queryData(payload: dict):
@@ -140,5 +180,21 @@ async def practiceFourStreamExampleOne():
             "response" : fullReply
         }
     
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@router.post("/practiceFiveLangChain")
+async def practiceFiveLangChain(payload: dict):
+    userPrompt = payload.get("prompt")
+    try:
+        print("Started..")
+        
+        schema = fetchSchema()
+        buildAPrompt = buildPrompt(userPrompt, schema)
+        
+        return {
+            "fetchSchema": schema,
+            "buildPrompt": buildAPrompt
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
