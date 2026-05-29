@@ -37,7 +37,7 @@ def buildAgent():
             - Always add LIMIT 500 unless the user specifies a different count.
             - If your query returns a SQL Error, fix it and try again.
             - After getting results, summarise them in a clear readable format."""
-                )
+        )
 
     return agent
 
