@@ -103,7 +103,7 @@ async def streamAgent(userPrompt: str, schema: dict, session_id: str):
 
         # Let the frontend know when the agent is running SQL
         elif kind == "on_tool_start":
-            yield "\n[Executing SQL...]\n"
+            yield "\n"
 
         # Let the frontend know if the agent is retrying after an error
         elif kind == "on_tool_end":

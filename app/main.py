@@ -7,7 +7,8 @@ load_dotenv()
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://192.168.0.100:5173"
 ]
 
 app.add_middleware(
